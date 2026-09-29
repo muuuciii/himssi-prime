@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HIMSSI Prime - Prime Athlete Management System</title>
+  <meta name="description" content="Sistem Monitoring, Manajemen, dan Evaluasi Atlet Pelatda Pencak Silat HIMSSI Sumsel Menuju Kejurnas Piala KONI Jakarta 2026">
+  <meta property="og:title" content="HIMSSI Prime - Prime Athlete Management System">
+  <meta property="og:description" content="Sistem Monitoring, Manajemen, dan Evaluasi Atlet Pelatda Pencak Silat HIMSSI Sumsel Menuju Kejurnas Piala KONI Jakarta 2026">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- ============================================================ -->
+  <!-- 1. LOGIN SCREEN -->
+  <!-- ============================================================ -->
+  <div id="loginScreen" class="login-wrapper">
+    <div class="login-overlay"></div>
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-box">
+          <img src="https://res.cloudinary.com/warv2ock/image/upload/v1790667398/himssi.png" alt="Logo HIMSSI" class="brand-logo" onerror="this.src='https://res.cloudinary.com/warv2ock/image/upload/v1790667398/himssi.png'">
+        </div>
+        <div class="brand-text">
+          <span class="login-org-badge"><i class="fa-solid fa-shield-halved text-gold"></i> PENGDA HIMSSI SUMSEL</span>
+          <h1 class="brand-title">HIMSSI <span class="gold-text">PRIME</span></h1>
+          <p class="brand-subtitle">Prime Athlete Management System</p>
+          <div class="event-tag">
+            <i class="fa-solid fa-trophy"></i> Pelatda Kejurnas Silat Piala KONI Jakarta 2026
+          </div>
+        </div>
+      </div>
+
+      <div class="login-body">
+        <h2 class="form-heading">Masuk ke Sistem</h2>
+        <p class="form-desc">Silakan autentikasi akun Anda untuk mengakses portal Pelatda</p>
+
+        <div id="loginAlert" class="alert-box alert-danger hidden">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="loginAlertText">Username atau password salah!</span>
+        </div>
+
+        <form id="loginForm" autocomplete="off">
+          <div class="form-group">
+            <label for="usernameInput"><i class="fa-solid fa-id-badge"></i> Username / ID Pengguna</label>
+            <input type="text" id="usernameInput" class="form-control" placeholder="Masukkan username Anda" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label for="passwordInput"><i class="fa-solid fa-lock"></i> Kata Sandi (Password)</label>
+            <div class="input-password-wrapper">
+              <input type="password" id="passwordInput" class="form-control" placeholder="Masukkan kata sandi" required>
+              <button type="button" class="btn-toggle-pwd" id="togglePasswordBtn" title="Tampilkan Password">
+                <i class="fa-solid fa-eye" id="togglePasswordIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitLoginBtn">
+            <span>Masuk ke Dashboard</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <div class="login-security-indicator">
+          <i class="fa-solid fa-shield-check text-success"></i>
+          <span>Portal Resmi Pelatda Terintegrasi • Akses Terenkripsi</span>
+        </div>
+      </div>
+
+      <div class="login-footer">
+        <p>© 2026 Pengurus Daerah HIMSSI Sumatera Selatan. Menuju Juara Umum Piala KONI Jakarta.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 2. MAIN APPLICATION DASHBOARD LAYOUT -->
+  <!-- ============================================================ -->
+  <div id="appContainer" class="app-layout hidden">
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="https://res.cloudinary.com/warv2ock/image/upload/v1790667398/himssi.png" alt="Logo HIMSSI" class="mini-logo" onerror="this.src='https://res.cloudinary.com/warv2ock/image/upload/v1790667398/himssi.png'">
+          <div>
+            <h2 class="sidebar-brand-name">HIMSSI <span class="gold-text">PRIME</span></h2>
+            <span class="sidebar-org">HIMSSI SUMSEL</span>
+          </div>
+        </div>
+        <button id="closeSidebarBtn" class="btn-icon mobile-only" title="Tutup Menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Current User Profile in Sidebar -->
+      <div class="sidebar-user-card">
+        <div class="user-avatar-wrap">
+          <img id="sidebarUserAvatar" src="" alt="Avatar" class="user-avatar">
+          <span class="status-indicator online"></span>
+        </div>
+        <div class="user-meta">
+          <h4 id="sidebarUserName" class="user-name">Nama Pengguna</h4>
+          <div class="user-badges">
+            <span id="sidebarUserRole" class="badge badge-role">ROLE</span>
+            <span id="sidebarUserExtra" class="user-extra-text">ID: -</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Countdown Widget in Sidebar -->
+      <div class="sidebar-countdown-card">
+        <div class="countdown-head">
+          <i class="fa-solid fa-fire text-gold"></i>
+          <span>MENUJU PIALA KONI</span>
+        </div>
+        <div class="countdown-target">17 November 2026 • Jakarta</div>
+        <div class="countdown-boxes">
+          <div class="time-box">
+            <span id="cdDays" class="time-val">00</span>
+            <span class="time-lbl">Hari</span>
+          </div>
+          <div class="time-box">
+            <span id="cdHours" class="time-val">00</span>
+            <span class="time-lbl">Jam</span>
+          </div>
+          <div class="time-box">
+            <span id="cdMinutes" class="time-val">00</span>
+            <span class="time-lbl">Menit</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">MENU UTAMA</div>
+
+        <button class="nav-link active" data-page="dashboard">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-link" data-page="athletes">
+          <i class="fa-solid fa-users-line"></i>
+          <span>Atlet & Tim</span>
+        </button>
+
+        <button class="nav-link" data-page="training">
+          <i class="fa-solid fa-dumbbell"></i>
+          <span>Program Latihan</span>
+        </button>
+
+        <button class="nav-link" data-page="monitoring">
+          <i class="fa-solid fa-heart-pulse"></i>
+          <span>Monitoring & Fisik</span>
+        </button>
+
+        <!-- Role conditional links -->
+        <button class="nav-link" data-page="users" id="navUsersLink">
+          <i class="fa-solid fa-user-gear"></i>
+          <span>User Management</span>
+          <span class="nav-pill-badge gold">Owner</span>
+        </button>
+
+        <button class="nav-link" data-page="wellness" id="navWellnessLink">
+          <i class="fa-solid fa-clipboard-check"></i>
+          <span>Daily Wellness</span>
+          <span class="nav-pill-badge green">Input</span>
+        </button>
+
+        <button class="nav-link" data-page="reports">
+          <i class="fa-solid fa-file-invoice"></i>
+          <span>Laporan Pelatda</span>
+        </button>
+
+        <div class="nav-section-title">PENGATURAN</div>
+
+        <button class="nav-link" data-page="profile">
+          <i class="fa-solid fa-circle-user"></i>
+          <span>Profil & Akun</span>
+        </button>
+
+        <button class="nav-link text-danger btn-logout" id="sidebarLogoutBtn" onclick="logout()" title="Keluar dari Akun">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Keluar (Logout)</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <span class="status-dot"></span>
+          <span>Sistem Pelatda Online v2.4</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-wrapper">
+      <!-- TOP NAVBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="toggleSidebarBtn" class="btn-icon mobile-only" title="Buka Menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="page-title-box">
+            <h1 id="pageTitle" class="current-page-title">Dashboard Utama</h1>
+            <p id="pageBreadcrumb" class="current-breadcrumb">Beranda / Monitoring Kesiapan Atlet</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Quick Role Selector (Convenience switcher for testing & demo) -->
+          <div class="role-switcher-dropdown">
+            <button class="btn-role-switch" id="btnRoleSwitcher" title="Ganti Peran Cepat">
+              <i class="fa-solid fa-arrows-rotate"></i>
+              <span class="role-switch-label">Role: <strong id="topbarRoleBadge">OWNER</strong></span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div id="roleSwitchMenu" class="dropdown-menu hidden">
+              <div class="dropdown-header">Ganti Akun Demo:</div>
+              <button class="dropdown-item" data-switch-user="1111">
+                <i class="fa-solid fa-crown text-gold"></i>
+                <div>
+                  <strong>Mutia Kartika, M.Pd.</strong>
+                  <small>Owner (Full Access)</small>
+                </div>
+              </button>
+              <button class="dropdown-item" data-switch-user="2222">
+                <i class="fa-solid fa-user-tie text-info"></i>
+                <div>
+                  <strong>Dr. DARMAYANTI, SE.,MM.</strong>
+                  <small>Manager (Monitoring Access)</small>
+                </div>
+              </button>
+              <button class="dropdown-item" data-switch-user="4444">
+                <i class="fa-solid fa-clipboard-user text-warning"></i>
+                <div>
+                  <strong>Miko Paldian, S.Pd.,Gr.</strong>
+                  <small>Coach (Latihan & Evaluasi)</small>
+                </div>
+              </button>
+              <button class="dropdown-item" data-switch-user="0001">
+                <i class="fa-solid fa-medal text-success"></i>
+                <div>
+                  <strong>FATHIR ATHALLA</strong>
+                  <small>Atlet (Kelas D/PA PRA)</small>
+                </div>
+              </button>
+              <div class="dropdown-divider"></div>
+              <button type="button" class="dropdown-item text-danger btn-logout" data-action="logout" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket text-danger"></i>
+                <div>
+                  <strong class="text-danger">Keluar (Logout)</strong>
+                  <small>Akhiri sesi pengguna aktif</small>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Fullscreen Toggle Button -->
+          <button id="toggleFullscreenBtn" class="btn-icon" title="Layar Penuh (Full Screen)" onclick="toggleAppFullscreen()">
+            <i class="fa-solid fa-expand" id="fullscreenIcon"></i>
+          </button>
+
+          <!-- Alert / Notifications Bell -->
+          <div class="notification-dropdown">
+            <button id="notificationBtn" class="btn-icon" title="Notifikasi Kesiapan Atlet">
+              <i class="fa-solid fa-bell"></i>
+              <span id="notifBadge" class="notification-badge">2</span>
+            </button>
+            <div id="notificationMenu" class="dropdown-menu dropdown-right hidden">
+              <div class="dropdown-header">
+                <span>Notifikasi Tim Pelatda</span>
+                <span id="notifCount" class="badge badge-sm badge-gold">2 baru</span>
+              </div>
+              <div id="notifList" class="notif-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- User Topbar Profile -->
+          <div class="topbar-user">
+            <img id="topbarUserAvatar" src="" alt="User" class="topbar-avatar">
+            <div class="topbar-user-info desktop-only">
+              <span id="topbarUserName" class="topbar-name">Nama Pengguna</span>
+              <span id="topbarUserRoleBadge" class="badge badge-sm">OWNER</span>
+            </div>
+            <button id="topbarLogoutBtn" class="btn-icon text-danger btn-logout" title="Keluar (Logout)" onclick="logout()">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY (Pages switched by script.js) -->
+      <main class="content-body">
+
+        <!-- ============================================================ -->
+        <!-- PAGE 1: DASHBOARD (Home overview tailored by role) -->
+        <!-- ============================================================ -->
+        <section id="page-dashboard" class="page-section active">
+          <!-- Welcome Banner -->
+          <div class="welcome-banner">
+            <div class="welcome-content">
+              <div class="welcome-badge">
+                <i class="fa-solid fa-shield-halved text-gold"></i>
+                <span>PELATDA HIMSSI SUMSEL • ROAD TO JAKARTA</span>
+              </div>
+              <h2 class="welcome-title">Selamat Datang, <span id="welcomeUserName">Pelatih</span>!</h2>
+              <p class="welcome-desc" id="welcomeRoleDesc">
+                Pantau kesiapan kondisi fisik, kestabilan berat badan, dan intensitas latihan kontingen pencak silat menuju Kejuaraan Nasional Piala KONI Jakarta.
+              </p>
+              <div class="welcome-actions" id="welcomeQuickActions">
+                <!-- Dynamically injected action buttons based on role -->
+              </div>
+            </div>
+            <div class="welcome-illustration desktop-only">
+              <div class="hero-circle">
+                <i class="fa-solid fa-trophy hero-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- KEY STATISTIC CARDS -->
+          <div class="stats-grid">
+            <div class="stat-card stat-primary">
+              <div class="stat-icon-wrap">
+                <i class="fa-solid fa-users"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total Atlet Pelatda</span>
+                <h3 class="stat-value" id="statTotalAthletes">0</h3>
+                <span class="stat-sub">Tersebar di 4 Kelas Tanding</span>
+              </div>
+            </div>
+
+            <div class="stat-card stat-success">
+              <div class="stat-icon-wrap">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Atlet Siap Latihan</span>
+                <h3 class="stat-value" id="statReadyAthletes">0</h3>
+                <span class="stat-sub text-success"><i class="fa-solid fa-arrow-trend-up"></i> Kondisi Prima (Score &ge; 80)</span>
+              </div>
+            </div>
+
+            <div class="stat-card stat-warning">
+              <div class="stat-icon-wrap">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Atlet Monitoring</span>
+                <h3 class="stat-value" id="statMonitoringAthletes">0</h3>
+                <span class="stat-sub text-warning"><i class="fa-solid fa-eye"></i> Perlu Penyesuaian Beban (60-79)</span>
+              </div>
+            </div>
+
+            <div class="stat-card stat-danger">
+              <div class="stat-icon-wrap">
+                <i class="fa-solid fa-heart-crack"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Atlet Warning</span>
+                <h3 class="stat-value" id="statWarningAthletes">0</h3>
+                <span class="stat-sub text-danger"><i class="fa-solid fa-triangle-exclamation"></i> Fatigue / BB Berisiko (&lt; 60)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ATHLETE SPECIFIC ALERT CARD (Shown when role is ATHLETE) -->
+          <div id="athletePersonalAlert" class="personal-alert-card hidden">
+            <div class="personal-alert-header">
+              <div class="alert-icon-ring" id="athleteScoreRing">
+                <span id="athleteScoreVal">0</span>
+              </div>
+              <div class="personal-alert-text">
+                <div class="readiness-title-row">
+                  <h3 id="athleteReadinessStatusTitle">Status Kesiapan: Memuat...</h3>
+                  <span id="athleteReadinessBadge" class="badge">Siap</span>
+                </div>
+                <p id="athleteReadinessAdvice">Rekomendasi pemulihan akan ditampilkan di sini berdasarkan wellness harian Anda.</p>
+                <div class="personal-meta-pills">
+                  <span class="meta-pill"><i class="fa-solid fa-bed"></i> Tidur: <strong id="athleteTodaySleep">-</strong> Jam</span>
+                  <span class="meta-pill"><i class="fa-solid fa-heart-pulse"></i> Resting HR: <strong id="athleteTodayRHR">-</strong> BPM</span>
+                  <span class="meta-pill"><i class="fa-solid fa-weight-scale"></i> BB Terkini: <strong id="athleteTodayWeight">-</strong> Kg</span>
+                  <span class="meta-pill"><i class="fa-solid fa-scale-balanced"></i> Target Kelas: <strong id="athleteClassTarget">-</strong></span>
+                </div>
+              </div>
+              <button class="btn btn-gold btn-sm" id="btnGoToWellness">
+                <i class="fa-solid fa-pen-to-square"></i> Input Wellness Hari Ini
+              </button>
+            </div>
+          </div>
+
+          <!-- CHARTS SECTION -->
+          <div class="charts-grid">
+            <!-- Chart 1: Weight Tracking -->
+            <div class="card chart-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title"><i class="fa-solid fa-weight-scale text-gold"></i> Weight Progress Chart</h3>
+                  <p class="card-subtitle">Tren berat badan atlet terhadap batas toleransi kelas tanding</p>
+                </div>
+                <div class="card-actions">
+                  <select id="weightChartAthleteSelect" class="form-select-sm">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart-container">
+                  <canvas id="weightChart"></canvas>
+                </div>
+                <div class="weight-chart-legend">
+                  <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Berat Badan Aktual</span>
+                  <span class="legend-item"><span class="legend-line" style="border-color:#ef4444"></span> Batas Maksimal Kelas</span>
+                  <span class="legend-item"><span class="legend-line" style="border-color:#3b82f6"></span> Batas Minimal Kelas</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart 2: Readiness Distribution -->
+            <div class="card chart-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title"><i class="fa-solid fa-chart-pie text-gold"></i> Athlete Readiness Distribution</h3>
+                  <p class="card-subtitle">Kondisi kesiapan bertanding seluruh kontingen hari ini</p>
+                </div>
+                <span class="badge badge-sm badge-gold">Smart Score</span>
+              </div>
+              <div class="card-body">
+                <div class="chart-container doughnut-wrap">
+                  <canvas id="readinessChart"></canvas>
+                </div>
+                <div class="readiness-legend-grid">
+                  <div class="readiness-summary-box box-green">
+                    <span class="dot green"></span>
+                    <div>
+                      <strong>Siap Latihan</strong>
+                      <span id="readinessGreenCount">0 Atlet</span>
+                    </div>
+                  </div>
+                  <div class="readiness-summary-box box-yellow">
+                    <span class="dot yellow"></span>
+                    <div>
+                      <strong>Monitoring</strong>
+                      <span id="readinessYellowCount">0 Atlet</span>
+                    </div>
+                  </div>
+                  <div class="readiness-summary-box box-red">
+                    <span class="dot red"></span>
+                    <div>
+                      <strong>Perlu Perhatian</strong>
+                      <span id="readinessRedCount">0 Atlet</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Training Performance Chart (Full width) -->
+          <div class="card chart-card-wide">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><i class="fa-solid fa-chart-line text-gold"></i> Training Performance & Load Chart</h3>
+                <p class="card-subtitle">Intensitas latihan tim dan rata-rata skor evaluasi teknis/fisik 7 sesi terakhir</p>
+              </div>
+              <div class="card-actions">
+                <span class="badge badge-outline"><i class="fa-solid fa-calendar-check"></i> Sesi Latihan Pelatda</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container large-chart">
+                <canvas id="performanceChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- DASHBOARD ATHLETE STATUS TABLE -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><i class="fa-solid fa-clipboard-list text-gold"></i> Ringkasan Kesiapan & Berat Badan Terkini</h3>
+                <p class="card-subtitle">Status atlet terkini berdasarkan data timbang badan & daily wellness terakhir</p>
+              </div>
+              <div class="card-actions">
+                <button class="btn btn-outline btn-sm" id="btnRefreshDashboard">
+                  <i class="fa-solid fa-rotate"></i> Segarkan Data
+                </button>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table" id="dashboardAthleteTable">
+                  <thead>
+                    <tr>
+                      <th>Atlet</th>
+                      <th>Kelas Tanding</th>
+                      <th>Komisariat</th>
+                      <th>BB Saat Ini</th>
+                      <th>Status Berat</th>
+                      <th>Score Kesiapan</th>
+                      <th>Status Kesiapan</th>
+                      <th class="text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboardAthleteTableBody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE 2: ATHLETES MANAGEMENT & DIRECTORY -->
+        <!-- ============================================================ -->
+        <section id="page-athletes" class="page-section hidden">
+          <div class="page-header-row">
+            <div>
+              <h2 class="section-title">Manajemen Data Atlet Pelatda</h2>
+              <p class="section-subtitle">Daftar lengkap kontingen atlet HIMSSI Sumsel untuk Kejurnas Piala KONI</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-gold" id="btnOpenAddAthleteModal">
+                <i class="fa-solid fa-user-plus"></i> Tambah Atlet Baru
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="filter-card">
+            <div class="search-input-wrapper">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="athleteSearchInput" class="form-control" placeholder="Cari nama atlet, komisariat, atau kelas tanding...">
+            </div>
+            <div class="filter-selects">
+              <select id="athleteClassFilter" class="form-select">
+                <option value="">Semua Kelas</option>
+                <option value="D/PA PRA">Kelas D/PA PRA (39-42 Kg)</option>
+                <option value="D/PI PRA">Kelas D/PI PRA (39-42 Kg)</option>
+                <option value="E/PA PRA">Kelas E/PA PRA (42-45 Kg)</option>
+                <option value="C/PI PRA">Kelas C/PI PRA (36-39 Kg)</option>
+                <option value="F/PA PRA">Kelas F/PA PRA (45-48 Kg)</option>
+              </select>
+              <select id="athleteStatusFilter" class="form-select">
+                <option value="">Semua Status Kesiapan</option>
+                <option value="READY">Siap Latihan (Green)</option>
+                <option value="MONITORING">Monitoring (Yellow)</option>
+                <option value="WARNING">Perlu Perhatian (Red)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Athletes Cards Grid -->
+          <div class="athletes-grid" id="athletesCardsContainer">
+            <!-- Populated dynamically -->
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE 3: TRAINING (Program Latihan, Dokumentasi, Evaluasi) -->
+        <!-- ============================================================ -->
+        <section id="page-training" class="page-section hidden">
+          <div class="page-header-row">
+            <div>
+              <h2 class="section-title">Program & Dokumentasi Latihan</h2>
+              <p class="section-subtitle">Pusat kendali latihan teknis, fisik, sparring, evaluasi, dan rekapitulasi tim</p>
+            </div>
+            <div class="header-actions" id="trainingHeaderActions">
+              <button class="btn btn-primary" id="btnOpenAddTrainingModal">
+                <i class="fa-solid fa-calendar-plus"></i> Input Program Latihan
+              </button>
+              <button class="btn btn-gold" id="btnOpenAddDocModal">
+                <i class="fa-solid fa-camera"></i> Upload Dokumentasi
+              </button>
+              <button class="btn btn-outline" id="btnOpenEvaluationModal">
+                <i class="fa-solid fa-star-half-stroke"></i> Evaluasi Atlet
+              </button>
+            </div>
+          </div>
+
+          <!-- Training Tabs -->
+          <div class="tabs-nav">
+            <button class="tab-btn active" data-target-tab="tabPrograms">
+              <i class="fa-solid fa-list-check"></i> Jadwal & Program Latihan
+            </button>
+            <button class="tab-btn" data-target-tab="tabDocumentation">
+              <i class="fa-solid fa-images"></i> Dokumentasi & Video Latihan
+            </button>
+            <button class="tab-btn" data-target-tab="tabEvaluations">
+              <i class="fa-solid fa-clipboard-check"></i> Riwayat Evaluasi Atlet
+            </button>
+          </div>
+
+          <!-- Tab Content 1: Program Latihan -->
+          <div id="tabPrograms" class="tab-pane active">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Daftar Program Latihan Pelatda</h3>
+                  <p class="card-subtitle">Intensitas, durasi, dan target kurikulum silat</p>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Tanggal</th>
+                        <th>Nama Sesi Latihan</th>
+                        <th>Kategori</th>
+                        <th>Durasi</th>
+                        <th>Intensitas</th>
+                        <th>Target Latihan</th>
+                        <th>Pelatih PIC</th>
+                        <th class="text-right">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="trainingProgramTableBody">
+                      <!-- Populated dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content 2: Dokumentasi Latihan -->
+          <div id="tabDocumentation" class="tab-pane hidden">
+            <div class="documentation-gallery" id="docGalleryContainer">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Tab Content 3: Riwayat Evaluasi Atlet -->
+          <div id="tabEvaluations" class="tab-pane hidden">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Catatan & Rapor Evaluasi Pelatih</h3>
+                  <p class="card-subtitle">Penilaian aspek fisik, teknik tanding, dan mentalitas tanding</p>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Tanggal</th>
+                        <th>Atlet</th>
+                        <th>Skor Fisik</th>
+                        <th>Skor Teknik</th>
+                        <th>Taktik & Mental</th>
+                        <th>Rata-Rata</th>
+                        <th>Catatan & Rekomendasi Pelatih</th>
+                        <th>Pelatih Penilai</th>
+                      </tr>
+                    </thead>
+                    <tbody id="evaluationTableBody">
+                      <!-- Populated dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE 4: MONITORING & FISIK (Weight Tracking & Daily Wellness) -->
+        <!-- ============================================================ -->
+        <section id="page-monitoring" class="page-section hidden">
+          <div class="page-header-row">
+            <div>
+              <h2 class="section-title">Monitoring Kondisi & Berat Badan</h2>
+              <p class="section-subtitle">Pelacakan ketat berat badan menuju timbang badan Kejurnas & data fisiologis atlet</p>
+            </div>
+            <div class="header-actions" id="monitoringHeaderActions">
+              <button class="btn btn-gold" id="btnOpenAddWeightModal">
+                <i class="fa-solid fa-weight-scale"></i> Input Berat Badan Atlet
+              </button>
+            </div>
+          </div>
+
+          <!-- Monitoring Summary Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon-wrap stat-icon-blue">
+                <i class="fa-solid fa-scale-unbalanced"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total Riwayat Timbang</span>
+                <h3 class="stat-value" id="statTotalWeightLogs">0</h3>
+                <span class="stat-sub">Pencatatan Berkala</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap stat-icon-green">
+                <i class="fa-solid fa-bullseye"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Berat Badan Ideal Kelas</span>
+                <h3 class="stat-value" id="statIdealWeightCount">0</h3>
+                <span class="stat-sub text-success">Masuk Rentang Target</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap stat-icon-yellow">
+                <i class="fa-solid fa-arrow-trend-up"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Overweight (Butuh Cutting)</span>
+                <h3 class="stat-value" id="statOverWeightCount">0</h3>
+                <span class="stat-sub text-warning">Di Atas Batas Maksimal</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon-wrap stat-icon-purple">
+                <i class="fa-solid fa-notes-medical"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Rata-Rata Istirahat Tidur</span>
+                <h3 class="stat-value" id="statAvgSleepHours">0 Jam</h3>
+                <span class="stat-sub">Target: &ge; 8 Jam / Hari</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weight Log Table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left text-gold"></i> Riwayat Input Timbang Badan</h3>
+                <p class="card-subtitle">Log penimbangan oleh pelatih dan atlet menuju hari H pertandingan</p>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Atlet</th>
+                      <th>Kelas Tanding</th>
+                      <th>Batas BB Kelas</th>
+                      <th>BB Terukur</th>
+                      <th>Deviasi</th>
+                      <th>Status Kelas</th>
+                      <th>Catatan Penimbangan</th>
+                      <th>Penginput</th>
+                    </tr>
+                  </thead>
+                  <tbody id="weightLogsTableBody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daily Wellness Logs Table -->
+          <div class="card mt-4">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><i class="fa-solid fa-heart-pulse text-gold"></i> Rekapitulasi Daily Wellness Kontingen</h3>
+                <p class="card-subtitle">Resting heart rate, durasi tidur, kelelahan, nyeri otot, stres, dan mood</p>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Atlet</th>
+                      <th>RHR (BPM)</th>
+                      <th>Tidur</th>
+                      <th>Fatigue (1-10)</th>
+                      <th>Soreness (1-10)</th>
+                      <th>Stress (1-10)</th>
+                      <th>Mood</th>
+                      <th>Readiness Score</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="wellnessLogsTableBody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE 5: DAILY WELLNESS CHECK (Special form for Athletes) -->
+        <!-- ============================================================ -->
+        <section id="page-wellness" class="page-section hidden">
+          <div class="page-header-row">
+            <div>
+              <h2 class="section-title">Daily Wellness Check-in</h2>
+              <p class="section-subtitle">Pengisian kondisi kebugaran harian mandiri atlet sebelum memulai sesi latihan</p>
+            </div>
+          </div>
+
+          <div class="wellness-form-container">
+            <div class="wellness-form-card">
+              <div class="form-banner">
+                <div class="banner-badge">
+                  <i class="fa-solid fa-stopwatch-20"></i> Check-in Hari Ini
+                </div>
+                <h3>Formulir Kebugaran Atlet</h3>
+                <p>Isilah dengan jujur sesuai kondisi saat bangun tidur pagi ini untuk mengoptimalkan performa latihan dan mencegah overtraining.</p>
+              </div>
+
+              <form id="wellnessForm" class="wellness-form">
+                <div class="form-grid">
+                  <!-- A. Resting Heart Rate -->
+                  <div class="wellness-field-card">
+                    <div class="field-header">
+                      <span class="field-letter">A</span>
+                      <div>
+                        <h4>Resting Heart Rate</h4>
+                        <small>Denyut nadi saat baru bangun tidur pagi</small>
+                      </div>
+                    </div>
+                    <div class="input-with-unit">
+                      <input type="number" id="inputRHR" class="form-control" placeholder="60" min="40" max="130" value="62" required>
+                      <span class="unit-tag">BPM</span>
+                    </div>
+                    <span class="field-hint"><i class="fa-solid fa-circle-info"></i> Normal atlet pencak silat: 50 - 70 BPM</span>
+                  </div>
+
+                  <!-- B. Sleep Duration -->
+                  <div class="wellness-field-card">
+                    <div class="field-header">
+                      <span class="field-letter">B</span>
+                      <div>
+                        <h4>Sleep Duration</h4>
+                        <small>Jumlah jam tidur nyenyak semalam</small>
+                      </div>
+                    </div>
+                    <div class="input-with-unit">
+                      <input type="number" id="inputSleep" class="form-control" placeholder="8" min="2" max="15" step="0.5" value="8" required>
+                      <span class="unit-tag">Jam</span>
+                    </div>
+                    <span class="field-hint"><i class="fa-solid fa-circle-info"></i> Rekomendasi masa Pelatda: 8 - 9 jam</span>
+                  </div>
+
+                  <!-- C. Fatigue Level -->
+                  <div class="wellness-field-card">
+                    <div class="field-header">
+                      <span class="field-letter">C</span>
+                      <div>
+                        <h4>Fatigue Level (Kelelahan)</h4>
+                        <small>Skala 1 (Sangat Segar) - 10 (Sangat Lelah)</small>
+                      </div>
+                    </div>
+                    <div class="range-wrapper">
+                      <input type="range" id="inputFatigue" class="form-range" min="1" max="10" value="2">
+                      <div class="range-display">
+                        <span>Skala: <strong id="valFatigue" class="highlight-val">2</strong> / 10</span>
+                        <span id="labelFatigue" class="text-success">Segar & Bugar</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- D. Muscle Soreness -->
+                  <div class="wellness-field-card">
+                    <div class="field-header">
+                      <span class="field-letter">D</span>
+                      <div>
+                        <h4>Muscle Soreness (Nyeri Otot)</h4>
+                        <small>Skala 1 (Tidak Nyeri) - 10 (Nyeri Parah / Pegal Keras)</small>
+                      </div>
+                    </div>
+                    <div class="range-wrapper">
+                      <input type="range" id="inputSoreness" class="form-range" min="1" max="10" value="2">
+                      <div class="range-display">
+                        <span>Skala: <strong id="valSoreness" class="highlight-val">2</strong> / 10</span>
+                        <span id="labelSoreness" class="text-success">Bebas Nyeri</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- E. Stress Level -->
+                  <div class="wellness-field-card">
+                    <div class="field-header">
+                      <span class="field-letter">E</span>
+                      <div>
+                        <h4>Stress Level (Beban Pikiran)</h4>
+                        <small>Skala 1 (Sangat Rileks) - 10 (Sangat Tertekan)</small>
+                      </div>
+                    </div>
+                    <div class="range-wrapper">
+                      <input type="range" id="inputStress" class="form-range" min="1" max="10" value="2">
+                      <div class="range-display">
+                        <span>Skala: <strong id="valStress" class="highlight-val">2</strong> / 10</span>
+                        <span id="labelStress" class="text-success">Tenang & Fokus</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- F. Mood -->
+                  <div class="wellness-field-card">
+                    <div class="field-header">
+                      <span class="field-letter">F</span>
+                      <div>
+                        <h4>Mood & Semangat</h4>
+                        <small>Pilih suasana hati Anda saat ini</small>
+                      </div>
+                    </div>
+                    <div class="mood-selector">
+                      <label class="mood-item">
+                        <input type="radio" name="moodChoice" value="Sangat Baik" checked>
+                        <span class="mood-card">
+                          <span class="mood-emoji">😀</span>
+                          <span class="mood-title">Sangat Baik</span>
+                        </span>
+                      </label>
+                      <label class="mood-item">
+                        <input type="radio" name="moodChoice" value="Baik">
+                        <span class="mood-card">
+                          <span class="mood-emoji">🙂</span>
+                          <span class="mood-title">Baik</span>
+                        </span>
+                      </label>
+                      <label class="mood-item">
+                        <input type="radio" name="moodChoice" value="Normal">
+                        <span class="mood-card">
+                          <span class="mood-emoji">😐</span>
+                          <span class="mood-title">Normal</span>
+                        </span>
+                      </label>
+                      <label class="mood-item">
+                        <input type="radio" name="moodChoice" value="Kurang Baik">
+                        <span class="mood-card">
+                          <span class="mood-emoji">🙁</span>
+                          <span class="mood-title">Kurang Baik</span>
+                        </span>
+                      </label>
+                      <label class="mood-item">
+                        <input type="radio" name="moodChoice" value="Buruk">
+                        <span class="mood-card">
+                          <span class="mood-emoji">😞</span>
+                          <span class="mood-title">Buruk</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- G. Weight -->
+                  <div class="wellness-field-card full-width">
+                    <div class="field-header">
+                      <span class="field-letter">G</span>
+                      <div>
+                        <h4>Weight (Berat Badan Pagi)</h4>
+                        <small>Timbang badan pagi setelah buang air kecil, tanpa pakaian berat</small>
+                      </div>
+                    </div>
+                    <div class="input-with-unit">
+                      <input type="number" id="inputWeight" class="form-control" placeholder="40.5" step="0.1" min="30" max="110" value="40.2" required>
+                      <span class="unit-tag">Kg</span>
+                    </div>
+                    <span class="field-hint"><i class="fa-solid fa-scale-balanced"></i> Otomatis dicatat ke grafik perkembangan berat badan Anda</span>
+                  </div>
+                </div>
+
+                <!-- Live Score Preview Card -->
+                <div class="live-score-box">
+                  <div class="live-score-left">
+                    <span class="calc-label">Kalkulasi Smart Feature:</span>
+                    <h3 class="calc-name">Athlete Readiness Score</h3>
+                    <p class="calc-desc">Algoritma menghitung kombinasi istirahat, denyut jantung istirahat, dan beban fisik/psikologis.</p>
+                  </div>
+                  <div class="live-score-center">
+                    <div class="score-circle-preview" id="previewScoreCircle">
+                      <span id="previewScoreNumber">92</span>
+                      <small>Poin</small>
+                    </div>
+                  </div>
+                  <div class="live-score-right">
+                    <div id="previewStatusBadge" class="badge badge-lg badge-success">
+                      <i class="fa-solid fa-circle-check"></i> Siap Latihan
+                    </div>
+                    <span id="previewStatusDescription" class="preview-text">
+                      Kondisi fisik prima, siap menjalani sesi latihan berintensitas tinggi hari ini!
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-actions-bar">
+                  <button type="submit" class="btn btn-gold btn-lg" id="btnSubmitWellness">
+                    <i class="fa-solid fa-paper-plane"></i> Kirim Laporan Daily Wellness
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE 6: USER MANAGEMENT (OWNER ONLY) -->
+        <!-- ============================================================ -->
+        <section id="page-users" class="page-section hidden">
+          <div class="page-header-row">
+            <div>
+              <h2 class="section-title">User & Role Management</h2>
+              <p class="section-subtitle">Kendali hak akses pengguna (Owner, Manager, Pelatih, Atlet) sistem HIMSSI Prime</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-gold" id="btnOpenAddUserModal">
+                <i class="fa-solid fa-user-shield"></i> Tambah Pengguna Baru
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Daftar Pengguna Sistem</h3>
+                <p class="card-subtitle">Semua akun yang terdaftar dalam basis data HIMSSI Prime</p>
+              </div>
+              <div class="search-input-wrapper-sm">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="userSearchInput" class="form-control" placeholder="Cari username atau nama...">
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table" id="usersTable">
+                  <thead>
+                    <tr>
+                      <th>Pengguna</th>
+                      <th>Username</th>
+                      <th>Role Akses</th>
+                      <th>Status Akun</th>
+                      <th>Terdaftar Sebagai</th>
+                      <th class="text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE 7: REPORTS (Laporan Pelatda Kejurnas) -->
+        <!-- ============================================================ -->
+        <section id="page-reports" class="page-section hidden">
+          <div class="page-header-row">
+            <div>
+              <h2 class="section-title">Laporan Resmi Pelatda HIMSSI Sumsel</h2>
+              <p class="section-subtitle">Rekapitulasi kesiapan atlet untuk laporan ke KONI dan Pengurus Besar HIMSSI</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+              </button>
+              <button class="btn btn-outline" id="btnExportDataJSON">
+                <i class="fa-solid fa-download"></i> Ekspor Data JSON
+              </button>
+            </div>
+          </div>
+
+          <!-- Printable Report Container -->
+          <div class="report-paper">
+            <div class="report-header">
+              <div class="report-org-logo">
+                <img src="https://res.cloudinary.com/warv2ock/image/upload/v1790667398/himssi.png" alt="Logo HIMSSI" class="report-logo" onerror="this.src='https://res.cloudinary.com/warv2ock/image/upload/v1790667398/himssi.png'">
+              </div>
+              <div class="report-org-info">
+                <h3>PENGURUS DAERAH HIMSSI SUMATERA SELATAN</h3>
+                <h4>TIM PELATDA KEJUARAAN NASIONAL PIALA KONI JAKARTA 2026</h4>
+                <p>Sekretariat: Palembang, Sumatera Selatan • Laporan Monitoring Terpadu HIMSSI Prime</p>
+              </div>
+            </div>
+            <div class="report-divider"></div>
+
+            <div class="report-title-section">
+              <h3>LAPORAN EVALUASI & KESIAPAN ATLET</h3>
+              <p>Tanggal Cetak: <span id="reportPrintDate">29 September 2026</span></p>
+            </div>
+
+            <!-- Report Summary Matrix -->
+            <div class="report-stats-grid">
+              <div class="report-stat-box">
+                <span class="label">Total Atlet Pelatda</span>
+                <strong id="repTotalAthletes">3 Atlet</strong>
+              </div>
+              <div class="report-stat-box">
+                <span class="label">Status Siap (Green)</span>
+                <strong id="repReadyAthletes" class="text-success">2 Atlet</strong>
+              </div>
+              <div class="report-stat-box">
+                <span class="label">Status Monitoring (Yellow)</span>
+                <strong id="repMonitoringAthletes" class="text-warning">1 Atlet</strong>
+              </div>
+              <div class="report-stat-box">
+                <span class="label">Status Warning (Red)</span>
+                <strong id="repWarningAthletes" class="text-danger">0 Atlet</strong>
+              </div>
+            </div>
+
+            <!-- Report Table -->
+            <div class="report-table-wrapper">
+              <table class="report-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Atlet</th>
+                    <th>Kelas Tanding</th>
+                    <th>Komisariat</th>
+                    <th>Batas BB</th>
+                    <th>BB Terakhir</th>
+                    <th>Status Berat</th>
+                    <th>Readiness Score</th>
+                    <th>Kesiapan Fisik</th>
+                  </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Report Footer / Legal Note -->
+            <div class="report-official-footer">
+              <div class="report-badge-verified">
+                <i class="fa-solid fa-circle-check text-success"></i> Dokumen Rekapitulasi Digital Resmi HIMSSI Prime Pelatda HIMSSI Sumatera Selatan
+              </div>
+              <p class="report-timestamp">Digenerate secara sistematis pada <span id="reportGeneratedTime"></span> WIB • Sah tanpa tanda tangan basah.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAGE 8: PROFILE & SETTINGS -->
+        <!-- ============================================================ -->
+        <section id="page-profile" class="page-section hidden">
+          <div class="page-header-row">
+            <div>
+              <h2 class="section-title">Profil & Pengaturan Sistem</h2>
+              <p class="section-subtitle">Kelola informasi akun, preferensi nama aplikasi, serta logo HIMSSI Prime</p>
+            </div>
+          </div>
+
+          <div class="profile-layout">
+            <div class="profile-side-card">
+              <div class="profile-avatar-large">
+                <img id="profileCardAvatar" src="" alt="Avatar" class="avatar-img-lg">
+                <label for="profilePhotoInput" class="avatar-edit-badge" title="Ganti Foto">
+                  <i class="fa-solid fa-camera"></i>
+                </label>
+                <input type="file" id="profilePhotoInput" accept="image/*" class="hidden">
+              </div>
+              <h3 id="profileCardName" class="profile-user-name">Nama</h3>
+              <span id="profileCardRole" class="badge badge-gold">ROLE</span>
+              <p id="profileCardDetail" class="profile-meta">Detail Info</p>
+
+              <div class="profile-quick-stats" id="profileQuickStats">
+                <!-- Injected dynamically -->
+              </div>
+
+              <div class="mt-4 pt-3" style="border-top: 1px dashed var(--border-light);">
+                <button type="button" class="btn btn-outline-danger btn-block btn-logout" data-action="logout" onclick="logout()">
+                  <i class="fa-solid fa-right-from-bracket"></i> Keluar (Logout)
+                </button>
+              </div>
+            </div>
+
+            <div class="profile-main-card">
+              <!-- Application Branding Card (Owner & Manager) -->
+              <div class="card mb-4" id="appBrandingCard">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title"><i class="fa-solid fa-palette text-gold"></i> Kustomisasi Nama & Logo Aplikasi</h3>
+                    <p class="card-subtitle">Ubah nama sistem, subtitle, dan logo organisasi secara langsung</p>
+                  </div>
+                  <span class="badge badge-gold">Branding Settings</span>
+                </div>
+                <div class="card-body">
+                  <form id="appBrandingForm">
+                    <div class="form-row">
+                      <div class="form-group col-6">
+                        <label>Nama Utama Aplikasi <span class="text-danger">*</span></label>
+                        <input type="text" id="settingAppName" class="form-control" value="HIMSSI Prime" placeholder="Contoh: HIMSSI Prime" required>
+                      </div>
+                      <div class="form-group col-6">
+                        <label>Nama Organisasi / Kontingen <span class="text-danger">*</span></label>
+                        <input type="text" id="settingOrgName" class="form-control" value="HIMSSI SUMSEL" placeholder="Contoh: HIMSSI SUMSEL" required>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Kepanjangan / Subtitle Aplikasi</label>
+                      <input type="text" id="settingAppSubtitle" class="form-control" value="Prime Athlete Management System" placeholder="Kepanjangan nama aplikasi">
+                    </div>
+
+                    <div class="form-group">
+                      <label>Target Event & Kejuaraan</label>
+                      <input type="text" id="settingEventTag" class="form-control" value="Pelatda Kejurnas Piala KONI Jakarta 2026" placeholder="Nama Kejuaraan / Event">
+                    </div>
+
+                    <div class="form-group">
+                      <label>Logo Aplikasi</label>
+                      <div style="display:flex; align-items:center; gap: 1rem; margin-top: 0.5rem;">
+                        <img id="previewAppLogo" src="https://res.cloudinary.com/warv2ock/image/upload/v1790667398/himssi.png" alt="Preview Logo" onerror="this.src='https://res.cloudinary.com/warv2ock/image/upload/v1790667398/himssi.png'" style="width: 56px; height: 56px; border-radius: 50%; object-fit: contain; border: 2px solid var(--gold-bright); padding: 2px; background: #fff;">
+                        <div style="flex:1;">
+                          <input type="url" id="settingLogoUrl" class="form-control" placeholder="Masukkan URL Logo (https://...) atau upload file di bawah">
+                          <div style="margin-top: 0.4rem; display: flex; gap: 0.5rem; align-items: center;">
+                            <label for="settingLogoFileInput" class="btn btn-outline btn-sm" style="cursor:pointer;">
+                              <i class="fa-solid fa-cloud-arrow-up"></i> Unggah Gambar Logo Baru
+                            </label>
+                            <input type="file" id="settingLogoFileInput" accept="image/*" class="hidden">
+                            <button type="button" class="btn btn-sm btn-outline-danger" id="btnResetDefaultLogo" title="Kembalikan ke logo default">
+                              <i class="fa-solid fa-rotate-left"></i> Reset Logo
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-actions-bar mt-3">
+                      <button type="submit" class="btn btn-gold">
+                        <i class="fa-solid fa-circle-check"></i> Simpan Nama & Logo Baru
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Profile Update Form -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-solid fa-user-pen text-gold"></i> Edit Informasi Akun Pribadi</h3>
+                </div>
+                <div class="card-body">
+                  <form id="profileUpdateForm">
+                    <div class="form-group">
+                      <label>Nama Lengkap</label>
+                      <input type="text" id="profFullName" class="form-control" required>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group col-6">
+                        <label>Username</label>
+                        <input type="text" id="profUsername" class="form-control" readonly disabled>
+                        <small class="text-muted">Username tidak dapat diubah sendiri</small>
+                      </div>
+                      <div class="form-group col-6">
+                        <label>Role Sistem</label>
+                        <input type="text" id="profRoleDisplay" class="form-control" readonly disabled>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Password Baru</label>
+                      <input type="password" id="profNewPassword" class="form-control" placeholder="Kosongkan jika tidak ingin mengubah password">
+                    </div>
+
+                    <div class="form-group">
+                      <label>URL Foto Profil (Opsional atau gunakan tombol kamera di foto)</label>
+                      <input type="url" id="profAvatarUrl" class="form-control" placeholder="https://example.com/avatar.jpg">
+                    </div>
+
+                    <div class="form-actions-bar mt-4">
+                      <button type="submit" class="btn btn-gold">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Profil
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Database Management Card (Owner Only) -->
+              <div class="card mt-4" id="dbSettingsCard">
+                <div class="card-header">
+                  <h3 class="card-title"><i class="fa-solid fa-database text-gold"></i> Database & Reset Data</h3>
+                </div>
+                <div class="card-body">
+                  <p class="text-muted">Aplikasi ini menyimpan data secara persisten di LocalStorage peramban Anda. Anda dapat mengembalikan data ke kondisi awal kapan saja.</p>
+                  <div class="d-flex gap-2 mt-3">
+                    <button type="button" class="btn btn-outline" id="btnSeedDefaultData">
+                      <i class="fa-solid fa-rotate-left"></i> Reset ke Database Awal Pabrik
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" id="btnClearAllData">
+                      <i class="fa-solid fa-trash-can"></i> Hapus Semua Data Lokal
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODALS SECTION -->
+  <!-- ============================================================ -->
+
+  <!-- MODAL: ADD / EDIT ATHLETE -->
+  <div id="athleteModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="athleteModalTitle" class="modal-title">Tambah Data Atlet</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="athleteModal">&times;</button>
+        </div>
+        <form id="athleteForm">
+          <input type="hidden" id="athleteFormId">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Nama Lengkap Atlet <span class="text-danger">*</span></label>
+              <input type="text" id="athNameInput" class="form-control" placeholder="Contoh: FATHIR ATHALLA" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Nomor Akun (Username) <span class="text-danger">*</span></label>
+                <input type="text" id="athUsernameInput" class="form-control" placeholder="Contoh: 0004" required>
+              </div>
+              <div class="form-group col-6">
+                <label>Password Awal <span class="text-danger">*</span></label>
+                <input type="text" id="athPasswordInput" class="form-control" value="123456" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Kelas Tanding <span class="text-danger">*</span></label>
+                <input type="text" id="athClassInput" class="form-control" placeholder="Contoh: D/PA PRA" required>
+              </div>
+              <div class="form-group col-6">
+                <label>Rentang Batas BB (Kg) <span class="text-danger">*</span></label>
+                <input type="text" id="athBBRangeInput" class="form-control" placeholder="Contoh: 39-42" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Komisariat / Cabang <span class="text-danger">*</span></label>
+              <input type="text" id="athKomisariatInput" class="form-control" placeholder="Contoh: KERTAPATI" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Berat Badan Awal (Kg)</label>
+                <input type="number" id="athCurrentBBInput" class="form-control" step="0.1" placeholder="40.0" value="40.0">
+              </div>
+              <div class="form-group col-6">
+                <label>Target BB Pertandingan (Kg)</label>
+                <input type="number" id="athTargetBBInput" class="form-control" step="0.1" placeholder="40.5" value="40.5">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>URL Foto Profil</label>
+              <input type="url" id="athPhotoUrlInput" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+              <small class="text-muted">Biarkan kosong untuk menggunakan avatar silat default</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-close-modal="athleteModal">Batal</button>
+            <button type="submit" class="btn btn-gold">Simpan Atlet</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT USER (OWNER) -->
+  <div id="userModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="userModalTitle" class="modal-title">Tambah Pengguna Baru</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="userModal">&times;</button>
+        </div>
+        <form id="userForm">
+          <input type="hidden" id="userFormId">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Nama Lengkap & Gelar <span class="text-danger">*</span></label>
+              <input type="text" id="usrFullNameInput" class="form-control" placeholder="Contoh: Bambang Irawan, SE." required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Username <span class="text-danger">*</span></label>
+                <input type="text" id="usrUsernameInput" class="form-control" placeholder="Contoh: 5555" required>
+              </div>
+              <div class="form-group col-6">
+                <label>Password <span class="text-danger">*</span></label>
+                <input type="text" id="usrPasswordInput" class="form-control" placeholder="123456" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Role Akses <span class="text-danger">*</span></label>
+              <select id="usrRoleInput" class="form-select" required>
+                <option value="OWNER">OWNER - Pemilik & Hak Penuh</option>
+                <option value="MANAGER">MANAGER - Monitoring & Evaluasi</option>
+                <option value="COACH">COACH - Pelatih Lapangan</option>
+                <option value="ATHLETE">ATLET - Atlet Kontingen</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Status Akun</label>
+              <select id="usrStatusInput" class="form-select">
+                <option value="ACTIVE">Aktif (Dapat Login)</option>
+                <option value="INACTIVE">Nonaktif (Diblokir)</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-close-modal="userModal">Batal</button>
+            <button type="submit" class="btn btn-gold">Simpan Pengguna</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD TRAINING PROGRAM (COACH) -->
+  <div id="trainingModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Input Program Latihan Pelatda</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="trainingModal">&times;</button>
+        </div>
+        <form id="trainingForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Nama Sesi Latihan <span class="text-danger">*</span></label>
+              <input type="text" id="trNameInput" class="form-control" placeholder="Contoh: Penguatan Kuda-Kuda & Tendangan Sabit Tanding" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Tanggal Pelaksanaan <span class="text-danger">*</span></label>
+                <input type="date" id="trDateInput" class="form-control" required>
+              </div>
+              <div class="form-group col-6">
+                <label>Jenis / Kategori Latihan <span class="text-danger">*</span></label>
+                <select id="trTypeInput" class="form-select" required>
+                  <option value="Fisik & Stamina">Fisik & Stamina</option>
+                  <option value="Teknik & Jurus">Teknik & Jurus</option>
+                  <option value="Taktik Tanding">Taktik Tanding</option>
+                  <option value="Sparring Partner">Sparring Partner</option>
+                  <option value="Simulasi Pertandingan">Simulasi Pertandingan (Full Rules)</option>
+                  <option value="Recovery / Peregangan">Recovery / Peregangan</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Durasi (Menit) <span class="text-danger">*</span></label>
+                <input type="number" id="trDurationInput" class="form-control" placeholder="120" min="15" max="360" value="120" required>
+              </div>
+              <div class="form-group col-6">
+                <label>Intensitas Latihan <span class="text-danger">*</span></label>
+                <select id="trIntensityInput" class="form-select" required>
+                  <option value="Rendah">Rendah (Pemanasan / Recovery)</option>
+                  <option value="Sedang">Sedang (Maintenance)</option>
+                  <option value="Tinggi" selected>Tinggi (Pembebanan Maksimal)</option>
+                  <option value="Maksimal">Maksimal (Simulasi Final)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Target Capaian Latihan <span class="text-danger">*</span></label>
+              <textarea id="trTargetInput" class="form-control" rows="3" placeholder="Target akurasi jatuhan 80%, kecepatan serangan balik 0.3 detik, menjaga ketahanan 3 babak penuh." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-close-modal="trainingModal">Batal</button>
+            <button type="submit" class="btn btn-primary">Publikasikan Program</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD TRAINING DOCUMENTATION (COACH) -->
+  <div id="docModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Unggah Dokumentasi Latihan</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="docModal">&times;</button>
+        </div>
+        <form id="docForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Judul Sesi Dokumentasi <span class="text-danger">*</span></label>
+              <input type="text" id="docTitleInput" class="form-control" placeholder="Contoh: Sesi Sparring Pelatda Kertapati" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Tanggal <span class="text-danger">*</span></label>
+                <input type="date" id="docDateInput" class="form-control" required>
+              </div>
+              <div class="form-group col-6">
+                <label>Kategori Dokumentasi</label>
+                <select id="docCategoryInput" class="form-select">
+                  <option value="Foto Latihan">Foto Latihan</option>
+                  <option value="Video Analisis">Video Analisis Teknik</option>
+                  <option value="Simulasi Tanding">Simulasi Tanding</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Pilih File Foto Latihan (atau masukkan URL di bawah)</label>
+              <input type="file" id="docFileInput" accept="image/*" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label>URL Gambar / Thumbnail (Opsional)</label>
+              <input type="url" id="docMediaUrlInput" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+            </div>
+
+            <div class="form-group">
+              <label>Tautan Video Latihan (YouTube / Drive / MP4)</label>
+              <input type="url" id="docVideoUrlInput" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+
+            <div class="form-group">
+              <label>Catatan & Evaluasi Pelatih <span class="text-danger">*</span></label>
+              <textarea id="docNotesInput" class="form-control" rows="3" placeholder="Fokus perbaikan: timing sapuan bawah Fathir Athalla sudah tajam, antisipasi guntingan perlu dipercepat." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-close-modal="docModal">Batal</button>
+            <button type="submit" class="btn btn-gold">Simpan Dokumentasi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD ATHLETE WEIGHT (COACH) -->
+  <div id="weightModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Input Berat Badan Atlet (Timbang Badan)</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="weightModal">&times;</button>
+        </div>
+        <form id="weightForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Pilih Atlet <span class="text-danger">*</span></label>
+              <select id="weightAthleteSelect" class="form-select" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Tanggal Penimbangan <span class="text-danger">*</span></label>
+                <input type="date" id="weightDateInput" class="form-control" required>
+              </div>
+              <div class="form-group col-6">
+                <label>Berat Terukur (Kg) <span class="text-danger">*</span></label>
+                <input type="number" id="weightValInput" class="form-control" step="0.1" min="30" max="110" placeholder="40.0" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Catatan Penimbangan <span class="text-danger">*</span></label>
+              <textarea id="weightNoteInput" class="form-control" rows="3" placeholder="Contoh: Menuju timbang badan pertandingan. Kondisi hidrasi baik, defisit kalori terkendali." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-close-modal="weightModal">Batal</button>
+            <button type="submit" class="btn btn-gold">Simpan Hasil Timbang</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD ATHLETE EVALUATION (COACH) -->
+  <div id="evaluationModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Input Penilaian & Evaluasi Atlet</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="evaluationModal">&times;</button>
+        </div>
+        <form id="evaluationForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Pilih Atlet <span class="text-danger">*</span></label>
+              <select id="evalAthleteSelect" class="form-select" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Tanggal Evaluasi <span class="text-danger">*</span></label>
+              <input type="date" id="evalDateInput" class="form-control" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-4">
+                <label>Kondisi Fisik (1-100)</label>
+                <input type="number" id="evalPhysicalInput" class="form-control" min="1" max="100" value="85" required>
+              </div>
+              <div class="form-group col-4">
+                <label>Performa Teknik (1-100)</label>
+                <input type="number" id="evalTechnicalInput" class="form-control" min="1" max="100" value="88" required>
+              </div>
+              <div class="form-group col-4">
+                <label>Taktik & Mental (1-100)</label>
+                <input type="number" id="evalTacticalInput" class="form-control" min="1" max="100" value="82" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Catatan & Saran Evaluasi Pelatih <span class="text-danger">*</span></label>
+              <textarea id="evalNotesInput" class="form-control" rows="3" placeholder="Power tendangan lurus sangat baik, pertahankan konsentrasi di detik-detik akhir babak ke-3." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" data-close-modal="evaluationModal">Batal</button>
+            <button type="submit" class="btn btn-gold">Simpan Evaluasi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ATHLETE DETAIL VIEW -->
+  <div id="athleteDetailModal" class="modal-backdrop hidden">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Detail Profil & Rekapitulasi Atlet</h3>
+          <button type="button" class="btn-close-modal" data-close-modal="athleteDetailModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="athleteDetailContent">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="athleteDetailModal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Application Script -->
+  <script type="module" src="./script.js"></script>
+</body>
+</html>
